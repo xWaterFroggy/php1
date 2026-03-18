@@ -1,6 +1,6 @@
 <?php
 // Database credentials
-$host = getenv('DB_HOST') ?: 'localhost';
+$host = getenv('DB_HOST') ?: 'dpg-d6tbg95m5p6s73b9ib20-a';
 $port = getenv('DB_PORT') ?: '5432';
 $dbname = getenv('DB_NAME') ?: 'genevieve_db';
 $user = getenv('DB_USER') ?: 'genevieve_db_user';
