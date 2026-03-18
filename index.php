@@ -150,7 +150,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 
     <div class="container">
-        <h1>Scoreboard</h1>
+        <h1>Geneviève's Scoreboard</h1>
 
         <form method="POST" action="index.php">
             <div>
