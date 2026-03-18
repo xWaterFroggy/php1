@@ -1,6 +1,6 @@
 <?php
 // Database credentials
-$host = getenv('DB_HOST') ?: 'dpg-d6tbg95m5p6s73b9ib20-a';
+$host = getenv('DB_HOST') ?: 'localhost';
 $port = getenv('DB_PORT') ?: '5432';
 $dbname = getenv('DB_NAME') ?: 'genevieve_db';
 $user = getenv('DB_USER') ?: 'genevieve_db_user';
@@ -32,6 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && isset($_PO
     if (!empty($name) && is_numeric($score)) {
         $stmt = $conn->prepare("INSERT INTO scores (name, score) VALUES (:name, :score)");
         $stmt->execute([':name' => $name, ':score' => $score]);
+        // Redirect to avoid form resubmission on refresh
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit();
     }
 }
 
@@ -42,34 +45,138 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scoreboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 2em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: grid;
+            gap: 1em;
+            margin-bottom: 2em;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+        }
+        li:nth-child(odd) {
+            background-color: #e8ecef;
+        }
+        .score-name {
+            font-weight: bold;
+        }
+        .score-value {
+            font-weight: normal;
+            background-color: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.9em;
+        }
+        .no-scores {
+            text-align: center;
+            color: #7f8c8d;
+            padding: 2em;
+            background-color: transparent;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Scoreboard</h1>
+    <div class="container">
+        <h1>Scoreboard</h1>
 
-    <form method="POST" action="index.php">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-        <label for="score">Score:</label>
-        <input type="number" id="score" name="score" required>
-        <button type="submit">Add Score</button>
-    </form>
+        <form method="POST" action="index.php">
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="score">Score:</label>
+                <input type="number" id="score" name="score" required>
+            </div>
+            <button type="submit">Add Score</button>
+        </form>
 
-    <h2>Last 5 Entries</h2>
-    <ul>
-        <?php
-        if (count($scores) > 0) {
-            foreach ($scores as $row) {
-                echo "<li>" . htmlspecialchars($row['name']) . ": " . htmlspecialchars($row['score']) . "</li>";
+        <h2>Last 5 Entries</h2>
+        <ul>
+            <?php
+            if (count($scores) > 0) {
+                foreach ($scores as $row) {
+                    echo "<li><span class='score-name'>" . htmlspecialchars($row['name']) . "</span> <span class='score-value'>" . htmlspecialchars($row['score']) . "</span></li>";
+                }
+            } else {
+                echo "<li class='no-scores'>No scores yet.</li>";
             }
-        } else {
-            echo "<li>No scores yet.</li>";
-        }
-        ?>
-    </ul>
+            ?>
+        </ul>
+    </div>
 
 </body>
 </html>
