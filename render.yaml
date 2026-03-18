@@ -1,0 +1,39 @@
+
+services:
+  - type: web
+    name: php-postgres-app
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DB_HOST
+        fromService:
+          type: pserv
+          name: php-postgres-db
+          property: host
+      - key: DB_PORT
+        fromService:
+          type: pserv
+          name: php-postgres-db
+          property: port
+      - key: DB_NAME
+        fromService:
+          type: pserv
+          name: php-postgres-db
+          property: database
+      - key: DB_USER
+        fromService:
+          type: pserv
+          name: php-postgres-db
+          property: user
+      - key: DB_PASSWORD
+        fromService:
+          type: pserv
+          name: php-postgres-db
+          property: password
+  - type: pserv
+    name: php-postgres-db
+    env: postgres
+    plan: free
+    postgres:
+      version: "14"
