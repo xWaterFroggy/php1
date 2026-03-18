@@ -1,10 +1,10 @@
 <?php
 // Database credentials
-$host = getenv('DB_HOST');
-$port = getenv('DB_PORT');
-$dbname = getenv('DB_NAME');
-$user = getenv('DB_USER');
-$password = getenv('DB_PASSWORD');
+$host = getenv('DB_HOST') ?: 'dpg-d6tbg95m5p6s73b9ib20-a';
+$port = getenv('DB_PORT') ?: '5432';
+$dbname = getenv('DB_NAME') ?: 'genevieve_db';
+$user = getenv('DB_USER') ?: 'genevieve_db_user';
+$password = getenv('DB_PASSWORD') ?: 'o6Hr9QZkHLBvppW4PZpO0cXpQybFgFhf';
 
 // Create a database connection
 try {
