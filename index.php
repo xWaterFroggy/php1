@@ -53,7 +53,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f6;
+            background-color:rgb(255, 252, 87);
             color: #333;
             margin: 0;
             padding: 2em;
@@ -99,7 +99,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         button {
             padding: 12px;
-            background-color: #3498db;
+            background-color:rgb(27, 155, 110);
             color: white;
             border: none;
             border-radius: 4px;
@@ -109,7 +109,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
             width: 100%;
         }
         button:hover {
-            background-color: #2980b9;
+            background-color:rgb(145, 20, 20);
         }
         ul {
             list-style: none;
