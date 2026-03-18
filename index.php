@@ -1,10 +1,14 @@
 <?php
+session_start();
+
 // Database credentials
 $host = getenv('DB_HOST') ?: 'dpg-d6tbg95m5p6s73b9ib20-a';
 $port = getenv('DB_PORT') ?: '5432';
 $dbname = getenv('DB_NAME') ?: 'genevieve_db';
 $user = getenv('DB_USER') ?: 'genevieve_db_user';
 $password = getenv('DB_PASSWORD') ?: 'o6Hr9QZkHLBvppW4PZpO0cXpQybFgFhf';
+
+$error_message = null;
 
 // Create a database connection
 try {
@@ -29,6 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && isset($_PO
     $name = $_POST['name'];
     $score = (int)$_POST['score'];
 
+    if ($score > 100) {
+        $_SESSION['error_message'] = "Score cannot be higher than 100.";
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit();
+    }
+
     if (!empty($name) && is_numeric($score)) {
         $stmt = $conn->prepare("INSERT INTO scores (name, score) VALUES (:name, :score)");
         $stmt->execute([':name' => $name, ':score' => $score]);
@@ -37,6 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && isset($_PO
         exit();
     }
 }
+
+// Get and clear error message
+if (isset($_SESSION['error_message'])) {
+    $error_message = $_SESSION['error_message'];
+    unset($_SESSION['error_message']);
+}
+
 
 // Fetch the last 5 entries
 $stmt = $conn->query("SELECT name, score FROM scores ORDER BY created_at DESC LIMIT 5");
@@ -53,7 +70,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color:rgb(255, 196, 87);
+            background-color: #f4f7f6;
             color: #333;
             margin: 0;
             padding: 2em;
@@ -99,7 +116,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         button {
             padding: 12px;
-            background-color:rgb(27, 155, 110);
+            background-color: #3498db;
             color: white;
             border: none;
             border-radius: 4px;
@@ -109,7 +126,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
             width: 100%;
         }
         button:hover {
-            background-color:rgb(145, 20, 20);
+            background-color: #2980b9;
         }
         ul {
             list-style: none;
@@ -133,7 +150,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         .score-value {
             font-weight: normal;
-            background-color:rgb(219, 52, 183);
+            background-color: #3498db;
             color: white;
             padding: 5px 10px;
             border-radius: 12px;
@@ -145,12 +162,27 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
             padding: 2em;
             background-color: transparent;
         }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 1em;
+            border-radius: 4px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 1em;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Geneviève's Scoreboard</h1>
+        <h1>Scoreboard</h1>
+
+        <?php if ($error_message): ?>
+            <div class="error-message">
+                <?php echo htmlspecialchars($error_message); ?>
+            </div>
+        <?php endif; ?>
 
         <form method="POST" action="index.php">
             <div>
@@ -159,7 +191,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div>
                 <label for="score">Score:</label>
-                <input type="number" id="score" name="score" required>
+                <input type="number" id="score" name="score" required max="100">
             </div>
             <button type="submit">Add Score</button>
         </form>
