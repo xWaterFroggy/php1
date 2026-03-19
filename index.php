@@ -70,7 +70,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color:rgb(255, 196, 87);
+            background-color:rgb(173, 248, 138);
             color: #333;
             margin: 0;
             padding: 2em;
